@@ -1,0 +1,7 @@
+{
+  "name": "void-run-roguelike-arena",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A modular vanilla JS top-down roguelike shooter"
+}

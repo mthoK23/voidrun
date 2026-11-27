@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090d14">
+  <title>VOID//RUN — Roguelike Arena</title>
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+  <main class="game-shell">
+    <canvas id="game-canvas" aria-label="Top-down roguelike shooter game"></canvas>
+
+    <section id="hud" class="hud is-hidden" aria-live="polite">
+      <div class="hud-top">
+        <div class="hud-panel wave-panel">
+          <span class="eyebrow">CURRENT SECTOR</span>
+          <div class="wave-line"><span id="wave-value">01</span><span class="wave-slash">/</span><span id="wave-status">CLEAR THE SECTOR</span></div>
+          <div class="progress-track"><div id="wave-progress" class="progress-fill"></div></div>
+        </div>
+        <div class="hud-panel health-panel">
+          <div class="health-heading"><span class="eyebrow">INTEGRITY</span><span id="health-value">100 / 100</span></div>
+          <div class="health-track"><div id="health-fill" class="health-fill"></div></div>
+          <div class="health-foot"><span>ARMOR <b id="armor-value">0</b></span><span>ELIMINATIONS <b id="kill-value">0</b></span></div>
+        </div>
+      </div>
+      <div class="hud-bottom">
+        <div class="hud-panel weapon-panel">
+          <span class="eyebrow">ACTIVE WEAPON</span>
+          <strong id="weapon-value">—</strong>
+          <span id="weapon-detail" class="muted-copy">—</span>
+        </div>
+        <div class="hud-panel objective-panel">
+          <span class="eyebrow">FIELD REPORT</span>
+          <strong id="objective-value">Choose your loadout</strong>
+          <span id="objective-detail" class="muted-copy">WASD move · Mouse aim · Left click fire · P pause</span>
+        </div>
+      </div>
+      <div id="toast" class="toast" role="status"></div>
+    </section>
+
+    <section id="loadout-screen" class="screen screen-visible">
+      <div class="screen-card loadout-card">
+        <div class="brand-row"><span class="brand-mark">V//R</span><span class="eyebrow">ROGUE SYSTEMS // FIELD TEST 07</span></div>
+        <p class="kicker">SURVIVE THE LOOP</p>
+        <h1>VOID<span>//</span>RUN</h1>
+        <p class="screen-copy">One operator. Six breach points. An endless hostile signal. Choose your first weapon and hold the arena.</p>
+        <div class="section-heading"><span>01</span><div><b>SELECT YOUR LOADOUT</b><small>ONE WEAPON · NO RELOADS · MAKE IT COUNT</small></div></div>
+        <div class="weapon-grid">
+          <button class="weapon-card" data-weapon="pulse" type="button">
+            <span class="weapon-index">A / 01</span><span class="weapon-icon pulse-icon">✳</span>
+            <strong>Pulse Rifle</strong><span class="weapon-tag">BALANCED / PRECISION</span>
+            <span class="weapon-desc">Reliable bursts with tight spread and hard-hitting rounds.</span>
+            <span class="weapon-stats"><i>DMG <b>18</b></i><i>RATE <b>4.3/s</b></i></span>
+            <span class="choose-label">SELECT LOADOUT <span>↗</span></span>
+          </button>
+          <button class="weapon-card" data-weapon="scatter" type="button">
+            <span class="weapon-index">B / 02</span><span class="weapon-icon scatter-icon">✣</span>
+            <strong>Scatter Cannon</strong><span class="weapon-tag">CLOSE / BURST</span>
+            <span class="weapon-desc">Six-pellet spread. Devastating when threats get too close.</span>
+            <span class="weapon-stats"><i>DMG <b>8×6</b></i><i>RATE <b>1.3/s</b></i></span>
+            <span class="choose-label">SELECT LOADOUT <span>↗</span></span>
+          </button>
+          <button class="weapon-card" data-weapon="needle" type="button">
+            <span class="weapon-index">C / 03</span><span class="weapon-icon needle-icon">⌁</span>
+            <strong>Needle SMG</strong><span class="weapon-tag">RAPID / SUPPRESSION</span>
+            <span class="weapon-desc">High-velocity needles. Low recoil, relentless fire rate.</span>
+            <span class="weapon-stats"><i>DMG <b>8</b></i><i>RATE <b>10/s</b></i></span>
+            <span class="choose-label">SELECT LOADOUT <span>↗</span></span>
+          </button>
+        </div>
+        <div class="screen-footer"><span>WASD <b>MOVE</b></span><span>MOUSE <b>AIM</b></span><span>LMB <b>FIRE</b></span><span>P <b>PAUSE</b></span></div>
+      </div>
+    </section>
+
+    <section id="countdown-screen" class="screen screen-hidden" aria-live="assertive">
+      <div class="countdown-card"><span class="eyebrow">BREACH WINDOW OPENING</span><strong id="countdown-number">3</strong><span id="countdown-label">PREPARE FOR CONTACT</span></div>
+    </section>
+
+    <section id="upgrade-screen" class="screen screen-hidden">
+      <div class="screen-card upgrade-card">
+        <p class="kicker">SECTOR CLEARED</p>
+        <h2>Choose an <span>augmentation</span></h2>
+        <p class="screen-copy">The arena recalibrates. Select one upgrade before the next breach.</p>
+        <div id="upgrade-options" class="upgrade-grid"></div>
+        <div class="screen-footer"><span>SELECT ONE UPGRADE</span><span>NEXT SECTOR IN <b>3 SECONDS</b></span></div>
+      </div>
+    </section>
+
+    <section id="pause-screen" class="screen screen-hidden">
+      <div class="screen-card compact-card">
+        <p class="kicker">SIGNAL SUSPENDED</p><h2>Paused<span>.</span></h2>
+        <p class="screen-copy">Take a breath. The arena is waiting.</p>
+        <button id="resume-button" class="primary-button" type="button">RESUME RUN <span>↗</span></button>
+        <button id="pause-restart-button" class="text-button" type="button">RETURN TO LOADOUT</button>
+      </div>
+    </section>
+
+    <section id="gameover-screen" class="screen screen-hidden">
+      <div class="screen-card compact-card">
+        <p class="kicker danger-kicker">OPERATOR SIGNAL LOST</p><h2>Run <span>over.</span></h2>
+        <p id="gameover-summary" class="screen-copy">The arena took you out.</p>
+        <button id="restart-button" class="primary-button" type="button">REDEPLOY <span>↗</span></button>
+      </div>
+    </section>
+
+    <div class="scanline" aria-hidden="true"></div>
+  </main>
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
